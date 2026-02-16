@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SM0K367 // NEURAL GALLERY</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+    <style>
+        body { margin: 0; background: #000; color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; }
+        #canvas-container { position: fixed; top: 0; left: 0; outline: none; z-index: 1; }
+        
+        /* UI Layer */
+        #ui-layer { position: relative; z-index: 10; pointer-events: none; height: 100vh; display: flex; flex-direction: column; justify-content: space-between; padding: 40px; }
+        .header { border-left: 2px solid #8b5cf6; padding-left: 20px; }
+        h1 { font-size: 1.5rem; letter-spacing: 0.5rem; text-transform: uppercase; margin: 0; color: #a78bfa; }
+        .status { font-size: 0.7rem; color: #666; margin-top: 5px; }
+
+        .video-controls { pointer-events: all; display: flex; gap: 20px; align-items: center; }
+        .nav-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 15px 30px; cursor: pointer; backdrop-filter: blur(10px); transition: 0.3s; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 2px; }
+        .nav-btn:hover { background: #8b5cf6; border-color: #a78bfa; box-shadow: 0 0 20px rgba(139, 92, 246, 0.4); }
+
+        #video-title { position: absolute; bottom: 120px; left: 40px; font-size: 2rem; font-weight: 800; text-transform: uppercase; opacity: 0.8; max-width: 500px; }
+        
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.8) 100%); pointer-events: none; z-index: 5; }
+    </style>
+</head>
+<body>
+
+    <div id="canvas-container"></div>
+    <div class="overlay"></div>
+
+    <div id="ui-layer">
+        <div class="header">
+            <h1>Sm0k367</h1>
+            <div class="status">SYSTEM STATUS: AGENTIC_CORE_ACTIVE // VIDEO_BUFFER_SYNCED</div>
+        </div>
+
+        <div id="video-title">Initializing...</div>
+
+        <div class="video-controls">
+            <button class="nav-btn" onclick="prevVideo()">PREV</button>
+            <button class="nav-btn" onclick="nextVideo()">NEXT</button>
+            <div class="status" id="counter">01 / 12</div>
+        </div>
+    </div>
+
+    <script>
+        const videoFiles = [
+            { name: "Glowing AI Eye", url: "Glowing AI Eye Animation.mp4" },
+            { name: "Epic Tech Walkthrough", url: "epic-tech-ai-walkthrough.mp4" },
+            { name: "Neural Sequence 01", url: "010b4bba-04a1-4af1-b4e1-bffff297dd38.mp4" },
+            { name: "Neural Sequence 03", url: "035f11fd-533f-4983-a9fa-5c9dff3bb162.mp4" },
+            { name: "Core Logic 200d", url: "200d7d0e-648f-4de0-aa39-c9d88ee67ca9.mp4" },
+            { name: "Engine Stream 2f42", url: "2f42c750-6441-4a5f-9f3f-d78c759752a1 (1).mp4" },
+            { name: "Visualizer 38fc", url: "38fce049-003f-4e77-b978-097d4bc07cb0.mp4" },
+            { name: "Singularity 7713", url: "7713a62d-213b-4f93-83f7-29f238412b92.mp4" },
+            { name: "Agentic Loop 8233", url: "8233b596-18c8-48a3-8ff8-1c9bcd213412 (1).mp4" },
+            { name: "Manifest e1a2", url: "e1a240c9-59c9-4e4e-8e63-536aa069852c.mp4" },
+            { name: "Vibe Mesh e5fa", url: "e5fa84cd-003d-4901-b4a2-4a0ada2fe658.mp4" },
+            { name: "The Finale fb18", url: "fb18a000-8086-4c7a-816a-0ad0bcd650b0 (1).mp4" }
+        ];
+
+        let scene, camera, renderer, videoPlanes = [], currentIndex = 0;
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            // Add background particles
+            const particlesGeometry = new THREE.BufferGeometry();
+            const posArray = new Float32Array(5000 * 3);
+            for(let i=0; i < 5000 * 3; i++) posArray[i] = (Math.random() - 0.5) * 10;
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const particlesMaterial = new THREE.PointsMaterial({ size: 0.005, color: 0x8b5cf6 });
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+
+            // Create Video Planes
+            videoFiles.forEach((file, i) => {
+                const video = document.createElement('video');
+                video.src = file.url;
+                video.loop = true;
+                video.muted = true;
+                video.play();
+
+                const texture = new THREE.VideoTexture(video);
+                const geometry = new THREE.PlaneGeometry(3.2, 1.8);
+                const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide, transparent: true, opacity: 0 });
+                const plane = new THREE.Mesh(geometry, material);
+                
+                plane.position.x = i * 5;
+                plane.userData = { id: i, name: file.name };
+                scene.add(plane);
+                videoPlanes.push(plane);
+            });
+
+            camera.position.z = 5;
+            updateGallery();
+            animate();
+        }
+
+        function updateGallery() {
+            videoPlanes.forEach((plane, i) => {
+                const offset = i - currentIndex;
+                gsap.to(plane.position, { x: offset * 4, z: Math.abs(offset) * -3, duration: 1, ease: "expo.out" });
+                gsap.to(plane.material, { opacity: i === currentIndex ? 1 : 0.2, duration: 1 });
+            });
+            document.getElementById('video-title').innerText = videoFiles[currentIndex].name;
+            document.getElementById('counter').innerText = `${String(currentIndex + 1).padStart(2, '0')} / ${videoFiles.length}`;
+        }
+
+        function nextVideo() {
+            currentIndex = (currentIndex + 1) % videoFiles.length;
+            updateGallery();
+        }
+
+        function prevVideo() {
+            currentIndex = (currentIndex - 1 + videoFiles.length) % videoFiles.length;
+            updateGallery();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        init();
+    </script>
+</body>
+</html>
