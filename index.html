@@ -6,19 +6,19 @@
     
     <title>SM0K367 // NEURAL BROADCAST</title>
     <meta name="title" content="SM0K367 // NEURAL BROADCAST">
-    <meta name="description" content="Experience the Absolute Algorithm. A 3D cinematic archive of 100+ agentic repositories and neural sequences.">
+    <meta name="description" content="Initiate the Absolute Algorithm. Experience 100+ repositories synthesized into a 3D cinematic transmission.">
 
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://sm0k367.github.io/vids/">
     <meta property="og:title" content="SM0K367 // NEURAL BROADCAST">
     <meta property="og:description" content="Agentic Engineering | 3D Spatial Interfaces | 2026 Sound Stack">
-    <meta property="og:image" content="https://github.com/Sm0k367/Sm0k367/blob/main/banner.png?raw=true">
+    <meta property="og:image" content="https://raw.githubusercontent.com/Sm0k367/Sm0k367/main/banner2.png">
 
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://sm0k367.github.io/vids/">
-    <meta property="twitter:title" content="SM0K367 // NEURAL BROADCAST">
-    <meta property="twitter:description" content="Initiate the Algorithm. Experience the 3D cinematic archive of Sm0k367.">
-    <meta property="twitter:image" content="https://github.com/Sm0k367/Sm0k367/blob/main/banner.png?raw=true">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@Sm0ken42O">
+    <meta name="twitter:title" content="SM0K367 // NEURAL BROADCAST">
+    <meta name="twitter:description" content="Initiate the Algorithm. 3D cinematic archive.">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/Sm0k367/Sm0k367/main/banner2.png">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
@@ -34,21 +34,20 @@
         #start-overlay { position: fixed; inset: 0; background: #000; z-index: 100; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.5s; }
         .pulse { animation: pulse-red 2s infinite; font-size: 1.5rem; letter-spacing: 1rem; text-align: center; }
         @keyframes pulse-red { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.3; transform: scale(0.98); } }
-
         .progress-bar { position: absolute; bottom: 0; left: 0; height: 2px; background: #8b5cf6; width: 0%; transition: width 0.1s linear; box-shadow: 0 0 15px #8b5cf6; }
     </style>
 </head>
 <body>
 
     <div id="start-overlay" onclick="startBroadcast()">
-        <div class="pulse">INITIATE_ALGORITHM<br><span style="font-size: 0.6rem; letter-spacing: 0.2rem; color: #666;">CLICK TO SYNC AUDIO</span></div>
+        <div class="pulse">INITIATE_ALGORITHM<br><span style="font-size: 0.6rem; letter-spacing: 0.2rem; color: #666;">SYNC AUDIO CHANNEL</span></div>
     </div>
 
     <div id="canvas-container"></div>
 
     <div id="ui">
         <div class="glitch-text">SM0K367 // ABSOLUTE_BROADCAST_v2.6</div>
-        <div class="video-meta" id="video-name">WAITING...</div>
+        <div class="video-meta" id="video-name">CONNECTING...</div>
         <div class="progress-bar" id="progress"></div>
     </div>
 
@@ -100,7 +99,7 @@
         function playVideo(index) {
             currentVideoIndex = index;
             const source = videoSources[index];
-            document.getElementById('video-name').innerText = "STREAMING_FILE: " + source.toUpperCase();
+            document.getElementById('video-name').innerText = "SOURCE: " + source.toUpperCase();
 
             if (!videoElement) {
                 videoElement = document.createElement('video');
