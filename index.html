@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SM0K367 // NEURAL SINGULARITY</title>
+    <meta property="og:image" content="https://raw.githubusercontent.com/Sm0k367/Sm0k367/main/banner2.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/Sm0k367/Sm0k367/main/banner2.png">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&display=swap');
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Syncopate', sans-serif; }
+        #ui-overlay { position: fixed; inset: 0; z-index: 100; pointer-events: none; border: 40px solid transparent; border-image: radial-gradient(circle, rgba(139, 92, 246, 0.2), transparent) 1; }
+        
+        .scanner-line { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: rgba(139, 92, 246, 0.5); box-shadow: 0 0 15px #8b5cf6; animation: scan 4s linear infinite; z-index: 10; }
+        @keyframes scan { 0% { top: -5%; } 100% { top: 105%; } }
+
+        #data-stream { position: absolute; top: 50px; right: 50px; text-align: right; color: #8b5cf6; font-size: 0.6rem; line-height: 1.5; text-shadow: 0 0 5px #8b5cf6; }
+        #start-btn { position: fixed; inset: 0; background: #000; z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
+        .glitch { font-size: 2rem; letter-spacing: 1.5rem; color: #fff; animation: glitch 1s infinite; }
+        @keyframes glitch { 0% { transform: skew(0deg); } 20% { transform: skew(10deg); color: #8b5cf6; } 40% { transform: skew(-10deg); color: #00ffff; } 100% { transform: skew(0deg); } }
+    </style>
+</head>
+<body>
+
+    <div id="start-btn" onclick="initCore()">
+        <div class="glitch">INITIATE</div>
+        <div style="margin-top: 20px; color: #444; font-size: 0.7rem; letter-spacing: 0.5rem;">AUDIO_VISUAL_SYNC</div>
+    </div>
+
+    <div id="ui-overlay">
+        <div class="scanner-line"></div>
+        <div id="data-stream">SYSTEM: SM0K367<br>ALGORITHM: ACTIVE<br>CORE_TEMP: NOMINAL<br>LATENCY: 0.00ms</div>
+    </div>
+
+    <script>
+        const vids = [
+            "Glowing AI Eye Animation.mp4", "epic-tech-ai-walkthrough.mp4",
+            "010b4bba-04a1-4af1-b4e1-bffff297dd38.mp4", "035f11fd-533f-4983-a9fa-5c9dff3bb162.mp4",
+            "200d7d0e-648f-4de0-aa39-c9d88ee67ca9.mp4", "2f42c750-6441-4a5f-9f3f-d78c759752a1 (1).mp4",
+            "38fce049-003f-4e77-b978-097d4bc07cb0.mp4", "7713a62d-213b-4f93-83f7-29f238412b92.mp4",
+            "8233b596-18c8-48a3-8ff8-1c9bcd213412 (1).mp4", "e1a240c9-59c9-4e4e-8e63-536aa069852c.mp4",
+            "e5fa84cd-003d-4901-b4a2-4a0ada2fe658.mp4", "fb18a000-8086-4c7a-816a-0ad0bcd650b0 (1).mp4"
+        ];
+
+        let scene, camera, renderer, tunnel, videoMesh, currentIdx = 0;
+        let videoEl = document.createElement('video');
+        videoEl.crossOrigin = "anonymous";
+        videoEl.onended = () => transition();
+
+        function initCore() {
+            gsap.to("#start-btn", { opacity: 0, duration: 1, onComplete: () => document.getElementById('start-btn').remove() });
+            
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            // 1000x Detail: The Data Tunnel
+            const tunnelGeom = new THREE.CylinderGeometry(10, 10, 100, 32, 1, true);
+            const tunnelMat = new THREE.MeshBasicMaterial({ 
+                color: 0x8b5cf6, wireframe: true, transparent: true, opacity: 0.1 
+            });
+            tunnel = new THREE.Mesh(tunnelGeom, tunnelMat);
+            tunnel.rotation.x = Math.PI / 2;
+            scene.add(tunnel);
+
+            play(0);
+            animate();
+        }
+
+        function play(idx) {
+            currentIdx = idx;
+            videoEl.src = vids[idx];
+            videoEl.play();
+            
+            const tex = new THREE.VideoTexture(videoEl);
+            if(videoMesh) scene.remove(videoMesh);
+
+            // 1000x Detail: Warped Plane Geometry
+            const geom = new THREE.PlaneGeometry(16, 9, 32, 32);
+            const mat = new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide });
+            videoMesh = new THREE.Mesh(geom, mat);
+            scene.add(videoMesh);
+
+            camera.position.z = 20;
+            gsap.to(camera.position, { z: 12, duration: 2, ease: "power4.out" });
+        }
+
+        function transition() {
+            // Speed up tunnel during switch
+            gsap.to(tunnel.scale, { x: 0.1, y: 10, z: 0.1, duration: 0.5 });
+            gsap.to(camera.position, { z: 0, duration: 0.8, ease: "expo.in", onComplete: () => {
+                let next = (currentIdx + 1) % vids.length;
+                play(next);
+                gsap.to(tunnel.scale, { x: 1, y: 1, z: 1, duration: 1 });
+            }});
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if(tunnel) tunnel.rotation.y += 0.005;
+            if(videoMesh) {
+                // Audio-reactive simulation: subtle vertex jitter
+                videoMesh.rotation.y = Math.sin(Date.now() * 0.001) * 0.1;
+                const positions = videoMesh.geometry.attributes.position.array;
+                for(let i = 0; i < positions.length; i += 3) {
+                    positions[i+2] = Math.sin(Date.now() * 0.002 + positions[i]) * 0.1;
+                }
+                videoMesh.geometry.attributes.position.needsUpdate = true;
+            }
+            renderer.render(scene, camera);
+        }
+
+        initCore();
+    </script>
+</body>
+</html>
