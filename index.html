@@ -3,7 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <title>SM0K367 // NEURAL BROADCAST</title>
+    <meta name="title" content="SM0K367 // NEURAL BROADCAST">
+    <meta name="description" content="Experience the Absolute Algorithm. A 3D cinematic archive of 100+ agentic repositories and neural sequences.">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sm0k367.github.io/vids/">
+    <meta property="og:title" content="SM0K367 // NEURAL BROADCAST">
+    <meta property="og:description" content="Agentic Engineering | 3D Spatial Interfaces | 2026 Sound Stack">
+    <meta property="og:image" content="https://github.com/Sm0k367/Sm0k367/blob/main/banner.png?raw=true">
+
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://sm0k367.github.io/vids/">
+    <meta property="twitter:title" content="SM0K367 // NEURAL BROADCAST">
+    <meta property="twitter:description" content="Initiate the Algorithm. Experience the 3D cinematic archive of Sm0k367.">
+    <meta property="twitter:image" content="https://github.com/Sm0k367/Sm0k367/blob/main/banner.png?raw=true">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
     <style>
@@ -11,14 +27,13 @@
         body { margin: 0; background: #000; color: #fff; font-family: 'Syncopate', sans-serif; overflow: hidden; }
         #canvas-container { position: fixed; top: 0; left: 0; z-index: 1; }
         
-        /* High-Fidelity UI */
         #ui { position: fixed; inset: 0; z-index: 10; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 50px; border: 1px solid rgba(139, 92, 246, 0.2); margin: 20px; box-sizing: border-box; }
         .glitch-text { font-size: 0.8rem; letter-spacing: 0.5rem; color: #8b5cf6; text-shadow: 0 0 10px #8b5cf6; }
-        .video-meta { transform: rotate(-90deg); transform-origin: left bottom; position: absolute; bottom: 100px; left: 70px; }
+        .video-meta { transform: rotate(-90deg); transform-origin: left bottom; position: absolute; bottom: 100px; left: 70px; font-size: 0.7rem; color: #aaa; }
         
         #start-overlay { position: fixed; inset: 0; background: #000; z-index: 100; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.5s; }
-        .pulse { animation: pulse-red 2s infinite; font-size: 1.5rem; letter-spacing: 1rem; }
-        @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        .pulse { animation: pulse-red 2s infinite; font-size: 1.5rem; letter-spacing: 1rem; text-align: center; }
+        @keyframes pulse-red { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.3; transform: scale(0.98); } }
 
         .progress-bar { position: absolute; bottom: 0; left: 0; height: 2px; background: #8b5cf6; width: 0%; transition: width 0.1s linear; box-shadow: 0 0 15px #8b5cf6; }
     </style>
@@ -26,7 +41,7 @@
 <body>
 
     <div id="start-overlay" onclick="startBroadcast()">
-        <div class="pulse">INITIATE_ALGORITHM</div>
+        <div class="pulse">INITIATE_ALGORITHM<br><span style="font-size: 0.6rem; letter-spacing: 0.2rem; color: #666;">CLICK TO SYNC AUDIO</span></div>
     </div>
 
     <div id="canvas-container"></div>
@@ -64,16 +79,15 @@
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-            // Create Star Field
             const starsGeometry = new THREE.BufferGeometry();
-            const starsCount = 10000;
+            const starsCount = 8000;
             const posArray = new Float32Array(starsCount * 3);
-            for(let i=0; i<starsCount*3; i++) posArray[i] = (Math.random() - 0.5) * 20;
+            for(let i=0; i<starsCount*3; i++) posArray[i] = (Math.random() - 0.5) * 25;
             starsGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-            const starsMaterial = new THREE.PointsMaterial({ size: 0.005, color: 0x8b5cf6, transparent: true, opacity: 0.5 });
+            const starsMaterial = new THREE.PointsMaterial({ size: 0.005, color: 0x8b5cf6, transparent: true, opacity: 0.4 });
             scene.add(new THREE.Points(starsGeometry, starsMaterial));
 
-            camera.position.z = 5;
+            camera.position.z = 10;
             animate();
         }
 
@@ -86,9 +100,8 @@
         function playVideo(index) {
             currentVideoIndex = index;
             const source = videoSources[index];
-            document.getElementById('video-name').innerText = source.toUpperCase();
+            document.getElementById('video-name').innerText = "STREAMING_FILE: " + source.toUpperCase();
 
-            // Create or update video element
             if (!videoElement) {
                 videoElement = document.createElement('video');
                 videoElement.crossOrigin = "anonymous";
@@ -98,41 +111,36 @@
             videoElement.src = source;
             videoElement.load();
             videoElement.play();
-            videoElement.muted = false; // Audio is ON
+            videoElement.muted = false;
 
-            // Sync Texture
             if (!videoTexture) {
                 videoTexture = new THREE.VideoTexture(videoElement);
                 const geometry = new THREE.PlaneGeometry(16, 9);
-                const material = new THREE.MeshBasicMaterial({ map: videoTexture });
+                const material = new THREE.MeshBasicMaterial({ map: videoTexture, transparent: true });
                 videoMesh = new THREE.Mesh(geometry, material);
                 scene.add(videoMesh);
             }
 
-            // Cinematic Transition
-            gsap.fromTo(camera.position, { z: 15, y: 5 }, { z: 7, y: 0, duration: 2.5, ease: "expo.out" });
-            gsap.fromTo(videoMesh.material, { opacity: 0 }, { opacity: 1, duration: 1 });
+            gsap.fromTo(camera.position, { z: 20, y: 10 }, { z: 8, y: 0, duration: 3, ease: "expo.out" });
+            gsap.fromTo(videoMesh.material, { opacity: 0 }, { opacity: 1, duration: 1.5 });
         }
 
         function nextVideo() {
             let nextIndex = (currentVideoIndex + 1) % videoSources.length;
-            
-            // Wormhole exit effect
-            gsap.to(camera.position, { z: 0, duration: 1, ease: "power4.in", onComplete: () => {
+            gsap.to(camera.position, { z: 0, duration: 1.2, ease: "power4.in", onComplete: () => {
                 playVideo(nextIndex);
             }});
         }
 
         function animate() {
             requestAnimationFrame(animate);
-            if (videoElement) {
+            if (videoElement && !isNaN(videoElement.duration)) {
                 const progress = (videoElement.currentTime / videoElement.duration) * 100;
                 document.getElementById('progress').style.width = progress + "%";
             }
-            // Subtle floating motion
             if (videoMesh) {
-                videoMesh.rotation.y = Math.sin(Date.now() * 0.001) * 0.05;
-                videoMesh.rotation.x = Math.cos(Date.now() * 0.001) * 0.05;
+                videoMesh.rotation.y = Math.sin(Date.now() * 0.0005) * 0.03;
+                videoMesh.rotation.x = Math.cos(Date.now() * 0.0005) * 0.02;
             }
             renderer.render(scene, camera);
         }
