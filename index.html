@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SM0K367 // NEURAL SINGULARITY</title>
+  <title>Epic Tech AI</title>
   <meta property="og:image" content="banner2.png">
   <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
@@ -14,30 +14,37 @@
     #start-btn .sub { margin-top: 22px; color: #8b5cf6; font-size: 0.8rem; letter-spacing: 0.3rem;}
     .cyber-bar {
       position: absolute; top: 22px; right: 40px; z-index: 5;
-      text-align: right; color: #9f83ff; font-size: 0.85rem;
-      background: rgba(15,0,44,0.7); border-radius: 13px; padding: 9px 18px;
+      text-align: right; color: #b8e7ff; font-size: 1.12rem;
+      background: rgba(15,0,44,0.8); border-radius: 14px; padding: 15px 24px 10px 24px;
       user-select: none; pointer-events: none;
-      box-shadow: 0 0 12px #8b5cf655;
+      box-shadow: 0 0 16px #4bcaff99;
       font-family: inherit;
       letter-spacing: 0.09em;
-      opacity: .93;
+      opacity: .97;
+      min-width: 270px;
     }
-    .cyber-bar b { color: #ffbff8;}
+    .cyber-bar .brand { font-size: 1.18em; color: #18ffff; letter-spacing: 0.13em; font-weight: bold; text-shadow: 0 0 14px #1fd0e066;}
+    .cyber-bar .sub { color: #79d6e6; font-size: 0.93em;}
+    .cyber-bar .handle {
+      color: #fff; font-size: 1.02em; margin-top: 10px; font-weight: 700;
+      text-shadow: 0 0 8px #8b5cf6dd;
+    }
     @media (max-width:700px) {
-      .cyber-bar { position: static; padding: 7px 7px; margin: 16px 0; right: 0; left: 0; border-radius: 0;}
+      .cyber-bar { position: static; padding: 11px 7px 7px 7px; margin: 10px 0; right: 0; left: 0; border-radius: 0;}
     }
   </style>
 </head>
 <body>
 <div id="start-btn" onclick="initApp()">
-  <span style="font-size: 2.3rem; letter-spacing: .9rem; color: #fff; text-shadow: 0 0 18px #a97aff;">
-    INITIATE
+  <span style="font-size: 2.6rem; letter-spacing: .12em; color: #18ffff; text-shadow: 0 0 22px #1fd0e0;">
+    EPIC TECH AI
   </span>
-  <div class="sub">OVERRIDING_CORS_PROTOCOLS</div>
+  <div class="sub">SM0K367 NEURAL SINGULARITY<br>OVERRIDING_CORS_PROTOCOLS</div>
 </div>
 <div class="cyber-bar" id="cyber-bar" style="display:none">
-  <div>ALGORITHM: <b>SM0K367</b></div>
-  <div id="video-status"></div>
+  <div class="brand">Epic Tech AI</div>
+  <div class="sub">Neural Singularity Visual Gallery</div>
+  <div class="handle">X.com/@Smoken420</div>
 </div>
 <script>
 const VIDEO_LIST = [
@@ -55,9 +62,10 @@ const VIDEO_LIST = [
   { title: "e1a240c9-59c9-4e4e-8e63-536aa069852c", file: "e1a240c9-59c9-4e4e-8e63-536aa069852c.mp4" },
   { title: "e5fa84cd-003d-4901-b4a2-4a0ada2fe658", file: "e5fa84cd-003d-4901-b4a2-4a0ada2fe658.mp4" },
   { title: "epic-tech-ai-walkthrough", file: "epic-tech-ai-walkthrough.mp4" },
-  { title: "fb18a000-8086-4c7a-816a-0ad0bcd650b0 (1)", file: "fb18a000-8086-4c7a-816a-0ad0bcd650b0 (1).mp4" }
+  { title: "fb18a000-8086-4c7a-816a-0ad0bcd650b0 (1)", file: "fb18a000-8086-4c7a-816a-0ad0bcd650b0 (1).mp4" },
+  { title: "6be50863-e136-481c-9542-40f7e0ba7259", file: "6be50863-e136-481c-9542-40f7e0ba7259.mp4" }
 ];
-let currentIdx = 0, videoEl, videoTexture, videoMesh, stars, scene, camera, renderer, animating = false;
+let currentIdx = 0, videoEl, videoTexture, videoMesh, stars, scene, camera, renderer;
 let theme = 0;
 
 function initApp() {
@@ -65,7 +73,6 @@ function initApp() {
   document.getElementById('cyber-bar').style.display = "";
   setTimeout(()=>{setupThreeJS(); playVideoAt(currentIdx); animate();},250);
   window.addEventListener('resize', onResize);
-  setStatus('LOADING…');
 }
 
 function setupThreeJS() {
@@ -90,7 +97,7 @@ function makeStars() {
   let starCoords = [];
   for(let i=0;i<9000;i++) starCoords.push((Math.random()-0.5)*155, (Math.random()-0.5)*95, (Math.random()-0.5)*175);
   starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starCoords,3));
-  return new THREE.Points(starGeo, new THREE.PointsMaterial({color: [0x8b5cf6,0xffbff8,0x00ffc3][theme], size: 0.07}));
+  return new THREE.Points(starGeo, new THREE.PointsMaterial({color: [0x18ffff,0x41ecec,0x982fff][theme], size: 0.07}));
 }
 
 function playVideoAt(idx) {
@@ -121,7 +128,6 @@ function playVideoAt(idx) {
   if(stars)scene.remove(stars); stars = makeStars(); scene.add(stars);
   gsap.to(camera.position, { z: 9+Math.random()*1.5, duration: 2.2, ease:"power3.out" });
   gsap.fromTo(videoMesh.scale, {x:1.08,y:1.08}, {x:.99,y:.99,duration:2.5,ease:"power2.out"});
-  setStatus(`<b>${VIDEO_LIST[idx].title}</b>`);
 }
 
 function nextVideo() {
@@ -130,18 +136,13 @@ function nextVideo() {
 }
 
 function animate() {
-  animating = true;
   requestAnimationFrame(animate);
   if(stars) stars.rotation.y += 0.00032+0.0002*theme;
   if(videoMesh) videoMesh.rotation.y = Math.sin(Date.now() * .00036+.23) * .13;
   renderer.render(scene, camera);
 }
 
-function setStatus(txt) {
-  document.getElementById('video-status').innerHTML = txt;
-}
-
-// Optional: Keyboard navigation (←/→)
+// Optional: Keyboard navigation for you
 window.addEventListener('keydown', e=>{
   if(!scene) return;
   if(e.key==='ArrowRight') nextVideo();
@@ -152,7 +153,7 @@ window.addEventListener('keydown', e=>{
   if(e.key==='t' || e.key==='T') { // Change theme
     theme = (theme+1)%3;
     if(stars) {scene.remove(stars); stars = makeStars(); scene.add(stars);}
-    document.body.style.backgroundColor = ["#010014","#220b35","#191f13"][theme];
+    document.body.style.backgroundColor = ["#010014","#0a3141","#100017"][theme];
   }
 });
 </script>
