@@ -12,17 +12,27 @@
     body { margin: 0; background: #010014; color: #fff; overflow: hidden; font-family: 'Syncopate', Arial, sans-serif; height: 100vh; user-select: none;}
     #start-btn { position: fixed; inset: 0; background: #000c2a; z-index: 5; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; text-align: center; font-size: 2.3rem; letter-spacing: 1rem; transition: opacity 0.6s; color: #fff; font-weight: 700; border: none;}
     .cyber-bar { position: absolute; top: 15px; right: 30px; z-index: 10; text-align: right; color: #9f83ff; font-size: 0.76rem; background: rgba(15,0,44,0.7); border-radius: 12px; padding: 10px 20px; box-shadow: 0 0 16px #8b5cf633;}
-    #playlist { position: absolute; left: 30px; top: 25px; z-index: 10; background: rgba(23, 0, 66, 0.7); color: #f3ecff; border-radius: 10px; box-shadow: 0 2px 24px #36206fbb; padding: 13px 15px 10px 15px; min-width: 220px;}
-    #playlist h2 { margin: 0 0 8px 0; font-size: 1.1rem; letter-spacing: 0.16rem; color: #b79aff; font-weight: 700;}
+    #playlist { position: absolute; left: 20px; top: 18px; z-index: 10;
+      background: rgba(19,7,34,0.64); color: #f3ecff;
+      border-radius: 8px; box-shadow: 0 1px 10px #36206f99;
+      padding: 7px 8px 3px 12px; min-width: 118px; max-width: 180px;}
+    #playlist h2 {
+      margin: 0 0 2px 0; font-size: 1em; letter-spacing: 0.06rem; color: #c3aaff; font-weight: 600; padding-bottom: 2px;
+    }
     #playlist ul { margin: 0; padding: 0; list-style-type: none;}
-    #playlist li { padding: 5px 0; cursor: pointer; transition: color 0.16s, font-weight 0.16s;}
+    #playlist li {
+      padding: 3px 0 2px 0; cursor: pointer; font-size: 0.88em;
+      transition: color 0.16s, font-weight 0.16s;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      font-weight: 400;
+    }
     #playlist li.active, #playlist li:hover { color: #ffbff8; font-weight: 700; text-shadow: 0 0 4px #f1f;}
-    .controls { position: absolute; left: 50%; bottom: 40px; transform: translateX(-50%); display: flex; gap: 38px; z-index: 12;}
-    .control-btn { padding: 10px 18px; background: #8b5cf6; color: #fff; border-radius: 18px; border: none; font-size: 1.1rem; font-family: inherit; box-shadow: 0 2px 12px #462a8f88; cursor: pointer; letter-spacing: 0.13em; font-weight: 700; transition: background 0.2s, transform 0.13s;}
+    .controls { position: absolute; left: 50%; bottom: 40px; transform: translateX(-50%); display: flex; gap: 34px; z-index: 12;}
+    .control-btn { padding: 9px 15px; background: #8b5cf6; color: #fff; border-radius: 16px; border: none; font-size: 1rem; font-family: inherit; box-shadow: 0 2px 12px #462a8f88; cursor: pointer; letter-spacing: 0.13em; font-weight: 700; transition: background 0.2s, transform 0.13s;}
     .control-btn:hover { background: #4400ff; transform: scale(1.07);}
     @media (max-width: 700px) {
       #playlist, .cyber-bar, .controls { position: static; box-shadow: none; border-radius: 0; }
-      #playlist { margin-top: 60px; min-width: unset; }
+      #playlist { margin-top: 42px; min-width: unset; max-width: 100vw; }
       .controls { position: fixed; bottom: 15px; left: 0; right: 0; transform: none; justify-content: center;}
     }
   </style>
@@ -42,7 +52,7 @@
 </div>
 
 <div id="playlist" style="display: none;">
-  <h2>PlayList</h2>
+  <h2>Playlist</h2>
   <ul id="playlist-list"></ul>
 </div>
 
@@ -54,7 +64,7 @@
 </div>
 
 <script>
-  // Filenames directly in main directory
+  // No subfolder. List exact filenames as before.
   const VIDEO_LIST = [
     { title: "010b4bba-04a1-4af1-b4e1-bffff297dd38", file: "010b4bba-04a1-4af1-b4e1-bffff297dd38.mp4" },
     { title: "035f11fd-533f-4983-a9fa-5c9dff3bb162", file: "035f11fd-533f-4983-a9fa-5c9dff3bb162.mp4" },
@@ -136,12 +146,8 @@
     playing = false;
     togglePlay(true);
   }
-  function playPrev() {
-    let idx = (currentIdx - 1 + VIDEO_LIST.length) % VIDEO_LIST.length; playVideoAt(idx);
-  }
-  function playNext() {
-    let idx = (currentIdx + 1) % VIDEO_LIST.length; playVideoAt(idx);
-  }
+  function playPrev() { let idx = (currentIdx - 1 + VIDEO_LIST.length) % VIDEO_LIST.length; playVideoAt(idx);}
+  function playNext() { let idx = (currentIdx + 1) % VIDEO_LIST.length; playVideoAt(idx);}
   function togglePlay(forcePlay) {
     if(!videoEl) return;
     if(forcePlay === true || !playing) {
@@ -152,16 +158,13 @@
       setStatus(`Paused: <b>${VIDEO_LIST[currentIdx].title}</b>`);
     }
   }
-  function setStatus(html) {
-    document.getElementById('video-status').innerHTML = html;
-  }
+  function setStatus(html) { document.getElementById('video-status').innerHTML = html; }
   function renderPlaylist() {
     let ul = document.getElementById('playlist-list'); ul.innerHTML = "";
     VIDEO_LIST.forEach((v, i) => {
       let li = document.createElement('li'); li.innerText = v.title; li.className = i === currentIdx ? "active" : "";
       li.onclick = () => { playVideoAt(i); }; ul.appendChild(li);
-    });
-    highlightPlaylist();
+    }); highlightPlaylist();
   }
   function highlightPlaylist() {
     Array.from(document.querySelectorAll("#playlist li")).forEach((li, i) => {
