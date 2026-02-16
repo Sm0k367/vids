@@ -9,182 +9,152 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
   <style>
-    body { margin: 0; background: #010014; color: #fff; overflow: hidden; font-family: 'Syncopate', Arial, sans-serif; height: 100vh; user-select: none;}
-    #start-btn { position: fixed; inset: 0; background: #000c2a; z-index: 5; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; text-align: center; font-size: 2.3rem; letter-spacing: 1rem; transition: opacity 0.6s; color: #fff; font-weight: 700; border: none;}
-    .cyber-bar { position: absolute; top: 15px; right: 30px; z-index: 10; text-align: right; color: #9f83ff; font-size: 0.76rem; background: rgba(15,0,44,0.7); border-radius: 12px; padding: 10px 20px; box-shadow: 0 0 16px #8b5cf633;}
-    #playlist { position: absolute; left: 20px; top: 18px; z-index: 10;
-      background: rgba(19,7,34,0.64); color: #f3ecff;
-      border-radius: 8px; box-shadow: 0 1px 10px #36206f99;
-      padding: 7px 8px 3px 12px; min-width: 118px; max-width: 180px;}
-    #playlist h2 {
-      margin: 0 0 2px 0; font-size: 1em; letter-spacing: 0.06rem; color: #c3aaff; font-weight: 600; padding-bottom: 2px;
+    body { margin: 0; padding: 0; background: #010014; overflow: hidden; font-family: 'Syncopate', Arial, sans-serif; }
+    #start-btn { position: fixed; inset: 0; background: #000c2a; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; text-align: center; font-size: 2.3rem; letter-spacing: 1rem; transition: opacity 0.6s; color: #fff; font-weight: 700;}
+    #start-btn .sub { margin-top: 22px; color: #8b5cf6; font-size: 0.8rem; letter-spacing: 0.3rem;}
+    .cyber-bar {
+      position: absolute; top: 22px; right: 40px; z-index: 5;
+      text-align: right; color: #9f83ff; font-size: 0.85rem;
+      background: rgba(15,0,44,0.7); border-radius: 13px; padding: 9px 18px;
+      user-select: none; pointer-events: none;
+      box-shadow: 0 0 12px #8b5cf655;
+      font-family: inherit;
+      letter-spacing: 0.09em;
+      opacity: .93;
     }
-    #playlist ul { margin: 0; padding: 0; list-style-type: none;}
-    #playlist li {
-      padding: 3px 0 2px 0; cursor: pointer; font-size: 0.88em;
-      transition: color 0.16s, font-weight 0.16s;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      font-weight: 400;
-    }
-    #playlist li.active, #playlist li:hover { color: #ffbff8; font-weight: 700; text-shadow: 0 0 4px #f1f;}
-    .controls { position: absolute; left: 50%; bottom: 40px; transform: translateX(-50%); display: flex; gap: 34px; z-index: 12;}
-    .control-btn { padding: 9px 15px; background: #8b5cf6; color: #fff; border-radius: 16px; border: none; font-size: 1rem; font-family: inherit; box-shadow: 0 2px 12px #462a8f88; cursor: pointer; letter-spacing: 0.13em; font-weight: 700; transition: background 0.2s, transform 0.13s;}
-    .control-btn:hover { background: #4400ff; transform: scale(1.07);}
-    @media (max-width: 700px) {
-      #playlist, .cyber-bar, .controls { position: static; box-shadow: none; border-radius: 0; }
-      #playlist { margin-top: 42px; min-width: unset; max-width: 100vw; }
-      .controls { position: fixed; bottom: 15px; left: 0; right: 0; transform: none; justify-content: center;}
+    .cyber-bar b { color: #ffbff8;}
+    @media (max-width:700px) {
+      .cyber-bar { position: static; padding: 7px 7px; margin: 16px 0; right: 0; left: 0; border-radius: 0;}
     }
   </style>
 </head>
 <body>
-
 <div id="start-btn" onclick="initApp()">
   <span style="font-size: 2.3rem; letter-spacing: .9rem; color: #fff; text-shadow: 0 0 18px #a97aff;">
     INITIATE
   </span>
-  <div style="margin-top: 22px; color: #8b5cf6; font-size: 0.8rem; letter-spacing: 0.3rem;">OVERRIDING_CORS_PROTOCOLS</div>
+  <div class="sub">OVERRIDING_CORS_PROTOCOLS</div>
 </div>
-
-<div class="cyber-bar" id="cyber-bar">
-  <div>ALGORITHM: SM0K367</div>
-  <div id="video-status">VIDEO_STATUS: STANDBY</div>
+<div class="cyber-bar" id="cyber-bar" style="display:none">
+  <div>ALGORITHM: <b>SM0K367</b></div>
+  <div id="video-status"></div>
 </div>
-
-<div id="playlist" style="display: none;">
-  <h2>Playlist</h2>
-  <ul id="playlist-list"></ul>
-</div>
-
-<div class="controls" id="controls" style="display: none;">
-  <button class="control-btn" onclick="playPrev()">⏮ Prev</button>
-  <button class="control-btn" onclick="togglePlay()" id="playpause-btn">▶️ Play</button>
-  <button class="control-btn" onclick="playNext()">Next ⏭</button>
-  <button class="control-btn" onclick="toggleTheme()">🦾 Theme</button>
-</div>
-
 <script>
-  // No subfolder. List exact filenames as before.
-  const VIDEO_LIST = [
-    { title: "010b4bba-04a1-4af1-b4e1-bffff297dd38", file: "010b4bba-04a1-4af1-b4e1-bffff297dd38.mp4" },
-    { title: "035f11fd-533f-4983-a9fa-5c9dff3bb162", file: "035f11fd-533f-4983-a9fa-5c9dff3bb162.mp4" },
-    { title: "200d7d0e-648f-4de0-aa39-c9d88ee67ca9", file: "200d7d0e-648f-4de0-aa39-c9d88ee67ca9.mp4" },
-    { title: "2f42c750-6441-4a5f-9f3f-d78c759752a1 (1)", file: "2f42c750-6441-4a5f-9f3f-d78c759752a1 (1).mp4" },
-    { title: "38fce049-003f-4e77-b978-097d4bc07cb0", file: "38fce049-003f-4e77-b978-097d4bc07cb0.mp4" },
-    { title: "7713a62d-213b-4f93-83f7-29f238412b92", file: "7713a62d-213b-4f93-83f7-29f238412b92.mp4" },
-    { title: "8233b596-18c8-48a3-8ff8-1c9bcd213412 (1)", file: "8233b596-18c8-48a3-8ff8-1c9bcd213412 (1).mp4" },
-    { title: "Glowing AI Eye Animation", file: "Glowing AI Eye Animation.mp4" },
-    { title: "e1a240c9-59c9-4e4e-8e63-536aa069852c", file: "e1a240c9-59c9-4e4e-8e63-536aa069852c.mp4" },
-    { title: "e5fa84cd-003d-4901-b4a2-4a0ada2fe658", file: "e5fa84cd-003d-4901-b4a2-4a0ada2fe658.mp4" },
-    { title: "epic-tech-ai-walkthrough", file: "epic-tech-ai-walkthrough.mp4" },
-    { title: "fb18a000-8086-4c7a-816a-0ad0bcd650b0 (1)", file: "fb18a000-8086-4c7a-816a-0ad0bcd650b0 (1).mp4" }
-  ];
-  let currentIdx = 0, playing = false, videoEl, videoTexture, videoMesh, theme = 0;
-  let scene, camera, renderer, stars;
+const VIDEO_LIST = [
+  { title: "010b4bba-04a1-4af1-b4e1-bffff297dd38", file: "010b4bba-04a1-4af1-b4e1-bffff297dd38.mp4" },
+  { title: "035f11fd-533f-4983-a9fa-5c9dff3bb162", file: "035f11fd-533f-4983-a9fa-5c9dff3bb162.mp4" },
+  { title: "1c2585b5-48b9-483f-80c6-c329f2bca2d0", file: "1c2585b5-48b9-483f-80c6-c329f2bca2d0.mp4" },
+  { title: "200d7d0e-648f-4de0-aa39-c9d88ee67ca9", file: "200d7d0e-648f-4de0-aa39-c9d88ee67ca9.mp4" },
+  { title: "25c87a1d-2ab4-4657-9de2-179d985cef30", file: "25c87a1d-2ab4-4657-9de2-179d985cef30.mp4" },
+  { title: "2f42c750-6441-4a5f-9f3f-d78c759752a1 (1)", file: "2f42c750-6441-4a5f-9f3f-d78c759752a1 (1).mp4" },
+  { title: "38fce049-003f-4e77-b978-097d4bc07cb0", file: "38fce049-003f-4e77-b978-097d4bc07cb0.mp4" },
+  { title: "67251617-e010-45e5-befc-07598b6aadbd", file: "67251617-e010-45e5-befc-07598b6aadbd.mp4" },
+  { title: "7713a62d-213b-4f93-83f7-29f238412b92", file: "7713a62d-213b-4f93-83f7-29f238412b92.mp4" },
+  { title: "8233b596-18c8-48a3-8ff8-1c9bcd213412 (1)", file: "8233b596-18c8-48a3-8ff8-1c9bcd213412 (1).mp4" },
+  { title: "Glowing AI Eye Animation", file: "Glowing AI Eye Animation.mp4" },
+  { title: "e1a240c9-59c9-4e4e-8e63-536aa069852c", file: "e1a240c9-59c9-4e4e-8e63-536aa069852c.mp4" },
+  { title: "e5fa84cd-003d-4901-b4a2-4a0ada2fe658", file: "e5fa84cd-003d-4901-b4a2-4a0ada2fe658.mp4" },
+  { title: "epic-tech-ai-walkthrough", file: "epic-tech-ai-walkthrough.mp4" },
+  { title: "fb18a000-8086-4c7a-816a-0ad0bcd650b0 (1)", file: "fb18a000-8086-4c7a-816a-0ad0bcd650b0 (1).mp4" }
+];
+let currentIdx = 0, videoEl, videoTexture, videoMesh, stars, scene, camera, renderer, animating = false;
+let theme = 0;
 
-  function initApp() {
-    gsap.to("#start-btn", { opacity: 0, duration: 0.7, onComplete: () => document.getElementById('start-btn').remove() });
-    document.getElementById('playlist').style.display = "";
-    document.getElementById('controls').style.display = "flex";
-    renderPlaylist();
+function initApp() {
+  gsap.to("#start-btn", { opacity: 0, duration: 0.7, onComplete:()=>document.getElementById('start-btn').remove() });
+  document.getElementById('cyber-bar').style.display = "";
+  setTimeout(()=>{setupThreeJS(); playVideoAt(currentIdx); animate();},250);
+  window.addEventListener('resize', onResize);
+  setStatus('LOADING…');
+}
 
-    scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(80, window.innerWidth/window.innerHeight, 0.1, 1000);
-    renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+function setupThreeJS() {
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, .1, 1000);
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+  stars = makeStars();
+  scene.add(stars);
+}
 
-    stars = createStars();
-    scene.add(stars);
+function onResize(){
+  if(!camera||!renderer)return;
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth,window.innerHeight);
+}
 
-    playVideoAt(currentIdx);
-    animate();
-    window.addEventListener('resize', onResize);
-  }
+function makeStars() {
+  const starGeo = new THREE.BufferGeometry();
+  let starCoords = [];
+  for(let i=0;i<9000;i++) starCoords.push((Math.random()-0.5)*155, (Math.random()-0.5)*95, (Math.random()-0.5)*175);
+  starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starCoords,3));
+  return new THREE.Points(starGeo, new THREE.PointsMaterial({color: [0x8b5cf6,0xffbff8,0x00ffc3][theme], size: 0.07}));
+}
 
-  function onResize() {
-    if (!camera || !renderer) return;
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(innerWidth, innerHeight);
-  }
+function playVideoAt(idx) {
+  currentIdx = idx;
+  if(videoEl) { videoEl.pause(); videoEl.removeAttribute('src'); videoEl.load(); }
+  videoEl = document.createElement('video');
+  videoEl.src = VIDEO_LIST[idx].file;
+  videoEl.crossOrigin = "anonymous";
+  videoEl.playsInline = true;
+  videoEl.preload = "auto";
+  videoEl.muted = false;
+  videoEl.loop = false;
+  videoEl.style.display = "none";
+  document.body.appendChild(videoEl);
+  videoEl.onended = nextVideo;
+  videoEl.oncanplay = ()=>{ videoEl.play(); };
+  videoTexture = new THREE.VideoTexture(videoEl);
+  videoTexture.minFilter = THREE.LinearFilter;
+  videoTexture.magFilter = THREE.LinearFilter;
+  if(videoMesh) scene.remove(videoMesh);
+  const geom = new THREE.PlaneGeometry(16,9);
+  const mat = new THREE.MeshBasicMaterial({ map: videoTexture });
+  videoMesh = new THREE.Mesh(geom, mat);
+  videoMesh.position.z = 0;
+  videoMesh.scale.set(.99,.99,1);
+  scene.add(videoMesh);
+  camera.position.set(0,0,12);
+  if(stars)scene.remove(stars); stars = makeStars(); scene.add(stars);
+  gsap.to(camera.position, { z: 9+Math.random()*1.5, duration: 2.2, ease:"power3.out" });
+  gsap.fromTo(videoMesh.scale, {x:1.08,y:1.08}, {x:.99,y:.99,duration:2.5,ease:"power2.out"});
+  setStatus(`<b>${VIDEO_LIST[idx].title}</b>`);
+}
 
-  function createStars() {
-    const starGeo = new THREE.BufferGeometry();
-    let starCoords = [];
-    for(let i=0; i<7777; i++) starCoords.push((Math.random()-0.5)*100, (Math.random()-0.5)*100, (Math.random()-0.5)*100);
-    starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starCoords, 3));
-    return new THREE.Points(starGeo, new THREE.PointsMaterial({color: [0x8b5cf6, 0xffbff8, 0x00ffc3][theme], size: 0.065}));
-  }
+function nextVideo() {
+  let idx = (currentIdx + 1) % VIDEO_LIST.length;
+  playVideoAt(idx);
+}
 
-  function playVideoAt(idx) {
-    currentIdx = idx;
-    if(videoEl) { videoEl.pause(); videoEl.removeAttribute('src'); videoEl.load(); }
-    videoEl = document.createElement('video');
-    videoEl.src = VIDEO_LIST[idx].file;
-    videoEl.crossOrigin = "anonymous";
-    videoEl.playsInline = true;
-    videoEl.preload = "auto";
-    videoEl.muted = false;
-    videoEl.loop = false;
-    videoEl.style.display = "none";
-    document.body.appendChild(videoEl);
-    videoEl.onended = () => { playNext(); };
-    videoEl.oncanplay = () => { if (playing) videoEl.play(); };
-    videoTexture = new THREE.VideoTexture(videoEl);
-    videoTexture.minFilter = THREE.LinearFilter;
-    videoTexture.magFilter = THREE.LinearFilter;
-    if(videoMesh) scene.remove(videoMesh);
-    const geom = new THREE.PlaneGeometry(16, 9);
-    const mat = new THREE.MeshBasicMaterial({ map: videoTexture });
-    videoMesh = new THREE.Mesh(geom, mat);
-    scene.add(videoMesh);
-    camera.position.z = 16;
-    gsap.to(camera.position, { z: 10.7, duration: 2, ease: "power4.out" });
-    setStatus(`Playing: <b>${VIDEO_LIST[idx].title}</b>`);
-    highlightPlaylist();
-    playing = false;
-    togglePlay(true);
+function animate() {
+  animating = true;
+  requestAnimationFrame(animate);
+  if(stars) stars.rotation.y += 0.00032+0.0002*theme;
+  if(videoMesh) videoMesh.rotation.y = Math.sin(Date.now() * .00036+.23) * .13;
+  renderer.render(scene, camera);
+}
+
+function setStatus(txt) {
+  document.getElementById('video-status').innerHTML = txt;
+}
+
+// Optional: Keyboard navigation (←/→)
+window.addEventListener('keydown', e=>{
+  if(!scene) return;
+  if(e.key==='ArrowRight') nextVideo();
+  if(e.key==='ArrowLeft') {
+    let idx = (currentIdx - 1 + VIDEO_LIST.length) % VIDEO_LIST.length;
+    playVideoAt(idx);
   }
-  function playPrev() { let idx = (currentIdx - 1 + VIDEO_LIST.length) % VIDEO_LIST.length; playVideoAt(idx);}
-  function playNext() { let idx = (currentIdx + 1) % VIDEO_LIST.length; playVideoAt(idx);}
-  function togglePlay(forcePlay) {
-    if(!videoEl) return;
-    if(forcePlay === true || !playing) {
-      videoEl.play(); playing = true; document.getElementById("playpause-btn").innerText = "⏸ Pause";
-      setStatus(`Playing: <b>${VIDEO_LIST[currentIdx].title}</b>`);
-    } else {
-      videoEl.pause(); playing = false; document.getElementById("playpause-btn").innerText = "▶️ Play";
-      setStatus(`Paused: <b>${VIDEO_LIST[currentIdx].title}</b>`);
-    }
+  if(e.key==='t' || e.key==='T') { // Change theme
+    theme = (theme+1)%3;
+    if(stars) {scene.remove(stars); stars = makeStars(); scene.add(stars);}
+    document.body.style.backgroundColor = ["#010014","#220b35","#191f13"][theme];
   }
-  function setStatus(html) { document.getElementById('video-status').innerHTML = html; }
-  function renderPlaylist() {
-    let ul = document.getElementById('playlist-list'); ul.innerHTML = "";
-    VIDEO_LIST.forEach((v, i) => {
-      let li = document.createElement('li'); li.innerText = v.title; li.className = i === currentIdx ? "active" : "";
-      li.onclick = () => { playVideoAt(i); }; ul.appendChild(li);
-    }); highlightPlaylist();
-  }
-  function highlightPlaylist() {
-    Array.from(document.querySelectorAll("#playlist li")).forEach((li, i) => {
-      li.className = i === currentIdx ? "active" : "";
-    });
-  }
-  function toggleTheme() {
-    theme = (theme+1) % 3;
-    if(stars) scene.remove(stars);
-    stars = createStars();
-    scene.add(stars);
-    document.body.style.backgroundColor = ["#010014", "#1a0033", "#0d1f0b"][theme];
-    setStatus(`Theme: ${["Deep Space", "Purple Dream", "Neon Matrix"][theme]}`);
-  }
-  function animate() {
-    requestAnimationFrame(animate);
-    if(videoMesh) videoMesh.rotation.y = Math.sin(Date.now() * 0.00048) * 0.11;
-    if(stars) stars.rotation.y += 0.00042 + 0.0003*theme;
-    renderer.render(scene, camera);
-  }
+});
 </script>
 </body>
 </html>
